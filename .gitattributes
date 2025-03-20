@@ -1,0 +1,1 @@
+current_GREENGENES_gg16S_unaligned.fasta filter=lfs diff=lfs merge=lfs -text
