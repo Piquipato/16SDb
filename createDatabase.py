@@ -1,7 +1,7 @@
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
-import re, os
+import re, os, shutil
 import json
 import joblib as jb
 from itertools import product
@@ -84,7 +84,10 @@ def main(fasta_file, primer_file, outfile="output.fasta", n_jobs=1, debug=False,
             primer_regions[region] = {}
         primer_regions[region][orientation] = primer.seq
     
-    tempdir = tempfile.mkdtemp("fragments")
+    tempdir = os.path.join(os.path.split(os.path.abspath(fasta_file))[0], "work/tmp")
+    if os.path.exists(tempdir):
+        shutil.rmtree(tempdir)
+    os.mkdir(tempdir)
 
     # Find fragments for each region
     if debug:
@@ -104,11 +107,13 @@ def main(fasta_file, primer_file, outfile="output.fasta", n_jobs=1, debug=False,
         print("Merging fragments into a single file...")
     outfile = os.path.abspath(outfile)
     for fragment in os.listdir(tempdir):
-        path = os.path.abspath(f"{tempdir}/{fragment}")
+        path = os.path.join(tempdir, fragment)
         temp_records = SeqIO.parse(open(path, "r"), 'fasta')
         for record in temp_records:
-            SeqIO.write(open(outfile, "a"), record, "fasta")
-    
+            SeqIO.write(record, open(outfile, "a"), "fasta")
+        os.remove(path)
+    shutil.rmtree(tempdir)
+
     if debug:
         print("Database created successfully.")
    
