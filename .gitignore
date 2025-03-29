@@ -1,1 +1,4 @@
 fastq/
+work/
+__pycache__/
+slurm-logs/
