@@ -32,9 +32,11 @@ def convert_ambiguous_to_regex(primer):
 
 
 
-def find_fragment(sequence, primer5, primer3):
+def find_fragment(sequence, primer5, primer3, reverse=False):
+    if reverse:
+        primer3 = primer3.reverse_complement()
     primer5_regex = re.compile(convert_ambiguous_to_regex(primer5))
-    primer3_regex = re.compile(convert_ambiguous_to_regex(primer3.reverse_complement()))
+    primer3_regex = re.compile(convert_ambiguous_to_regex(primer3))
 
     match5 = primer5_regex.search(str(sequence))
     match3 = primer3_regex.search(str(sequence), match5.end() if match5 else 0)
