@@ -195,7 +195,7 @@ def script(
             index=list(fg.otus)
         ).to_csv(
             os.path.join(output_dir, "otus.csv"),
-            index=False,
+            index=True,
             header=True
         )
         return 0
