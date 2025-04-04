@@ -10,6 +10,22 @@ import os, re, sys
 import warnings
 import json
 
+
+"""
+    TODO: Hacer Docker con entorno de ejecucion y dependencias
+    TODO: Hacer un README
+    TODO: Hacer un environment.yml
+    TODO: Hacer un requirements.txt
+    TODO: Ordenar repositorio
+    TODO: Mirar distribuciones y mirar cuaderno
+    TODO: Meter control de que region meter en los archivos
+    TODO: Meter parametros de longitud de fragmentos
+    TODO: Medir distribuciones (calidad por base, calidad media fragmento, 
+                                longitud, numero de lecturas)
+    TODO: Meter calidad por fragmentos (calidad media o calidad por base, flag)
+"""
+
+
 def extract_metadata(fragment: SeqRecord) -> tp.Dict[str, str]:
     props = {"id": "","name": "","description": ""}
     for key in props.keys():
