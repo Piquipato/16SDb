@@ -85,11 +85,9 @@ class FragmentGenerator:
             shape=(len(self.otus), len(self.regions)),
             dtype=np.int64
         ), index=self.otus, columns=self.regions)
-        completeness = 0
-        for i in idxs:
-            self.present_matrix.loc[i]=1
-            completeness += 1
-        completeness = completeness / (self.present_matrix.size) * 100
+
+        completeness = np.sum(self.present_matrix.to_numpy()) / \
+            np.size(self.present_matrix.to_numpy()) * 100
         if self.debug:
             print("Completeness percentage of database: " \
                   f"{completeness:.2f}%")
