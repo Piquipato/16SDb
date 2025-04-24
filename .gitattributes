@@ -1,3 +1,5 @@
 current_GREENGENES_gg16S_unaligned.fasta filter=lfs diff=lfs merge=lfs -text
 fragments.fasta filter=lfs diff=lfs merge=lfs -text
 fragment_metadata.json filter=lfs diff=lfs merge=lfs -text
+current_SILVA_gg16S_unaligned.fasta filter=lfs diff=lfs merge=lfs -text
+databases/* filter=lfs diff=lfs merge=lfs -text
