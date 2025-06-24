@@ -31,7 +31,6 @@ def convert_ambiguous_to_regex(primer):
     return regex
 
 
-
 def find_fragment(sequence, primer5, primer3, reverse=False):
     if reverse:
         primer3 = primer3.reverse_complement()
@@ -44,6 +43,45 @@ def find_fragment(sequence, primer5, primer3, reverse=False):
     if match5 and match3:
         return Seq(sequence[match5.end():match3.start()])
     return None
+
+
+def fuzzy_degenerate_match(primer, sequence, threshold=0.9):
+    """
+    Returns (start, end, similarity) of the best window in sequence matching the degenerate primer.
+    """
+    REGEXER = json.load(open("pattern.json", "r"))
+    primer_patterns = [re.compile(REGEXER[base]) for base in primer]
+    best = None
+    best_score = 0
+    seq = str(sequence)
+    plen = len(primer)
+    for i in range(len(seq) - plen + 1):
+        window = seq[i:i+plen]
+        matches = sum(pat.fullmatch(base) is not None for pat, base in zip(primer_patterns, window))
+        score = matches / plen
+        if score > best_score and score >= threshold:
+            best = (i, i+plen, score)
+            best_score = score
+    return best
+
+
+def fuzzy_find_fragment(sequence, primer5, primer3, threshold=0.9, reverse=False):
+    """
+    Finds the fragment between two degenerate primers with fuzzy matching.
+    """
+    if reverse:
+        primer3 = primer3.reverse_complement()
+    seq = str(sequence)
+    match5 = fuzzy_degenerate_match(primer5, seq, threshold)
+    if not match5:
+        return None
+    match3 = fuzzy_degenerate_match(primer3, seq[match5[1]:], threshold)
+    if not match3:
+        return None
+    start = match5[1]
+    end = match5[1] + match3[0]
+    return Seq(seq[start:end])
+
 
 def hash_sequence(sequence, size=10):
     h = hashlib.blake2b(digest_size=size)
@@ -61,7 +99,12 @@ def worker(primer_regions, fasta_record, region, tempdir):
         name=fasta_record.name,
         description=fasta_record.description
     )
-    fragment = find_fragment(fasta_record.seq, primer5, primer3)
+    fragment = fuzzy_find_fragment(
+        fasta_record.seq,
+        primer5,
+        primer3,
+        threshold=0.9,
+    )
     if not isinstance(fragment, Seq) and fragment:
         fragment = Seq(fragment)
     fragment_file = None
