@@ -62,7 +62,7 @@ def fuzzy_degenerate_match(primer, sequence, threshold=0.9):
         if score > best_score and score >= threshold:
             best = (i, i+plen, score)
             best_score = score
-    return best
+    return best, best_score if best else None, None
 
 
 def fuzzy_find_fragment(sequence, primer5, primer3, threshold=0.9, reverse=False):
@@ -72,15 +72,15 @@ def fuzzy_find_fragment(sequence, primer5, primer3, threshold=0.9, reverse=False
     if reverse:
         primer3 = primer3.reverse_complement()
     seq = str(sequence)
-    match5 = fuzzy_degenerate_match(primer5, seq, threshold)
+    match5, best5 = fuzzy_degenerate_match(primer5, seq, threshold)
     if not match5:
-        return None
-    match3 = fuzzy_degenerate_match(primer3, seq[match5[1]:], threshold)
+        return None, None
+    match3, best3 = fuzzy_degenerate_match(primer3, seq[match5[1]:], threshold)
     if not match3:
-        return None
+        return None, None
     start = match5[1]
     end = match5[1] + match3[0]
-    return Seq(seq[start:end])
+    return Seq(seq[start:end]), [best5, best3]
 
 
 def hash_sequence(sequence, size=10):
@@ -93,18 +93,21 @@ def worker(primer_regions, fasta_record, region, tempdir):
     primer3 = primer_regions[region]["R"]
     seqhash = hash_sequence(fasta_record.seq)
     name = f"fragment_{fasta_record.id}_{fasta_record.name}_{seqhash}_{region}"
-    description = "Region: {region} | ID: {id} | Name: {name} | Description: {description}".format(
+    description = dict(
         region=region,
         id=fasta_record.id,
         name=fasta_record.name,
-        description=fasta_record.description
+        description=fasta_record.description,
+        uuid=name,
     )
-    fragment = fuzzy_find_fragment(
+    fragment, best_scrs = fuzzy_find_fragment(
         fasta_record.seq,
         primer5,
         primer3,
-        threshold=0.9,
+        threshold=0,
     )
+    description["scores"] = str(best_scrs) if best_scrs else ""
+    description = json.dumps(description)
     if not isinstance(fragment, Seq) and fragment:
         fragment = Seq(fragment)
     fragment_file = None
@@ -163,14 +166,16 @@ def main(fasta_file, primer_file, outfile="output.fasta", n_jobs=1, debug=False,
         print("Database created successfully.")
    
 
-def cli():
+def cli(*args):
     
-    args = argparse.ArgumentParser()
-    args.add_argument("--output", type=str, required=True, default="output.fasta")
-    args.add_argument("--n_jobs", type=int, required=False, default=1)
-    args.add_argument("--debug", action="store_true")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", type=str, required=True, default="output.fasta")
+    parser.add_argument("--n_jobs", type=int, required=False, default=1)
+    parser.add_argument("--debug", action="store_true")
 
-    args = args.parse_args()
+    args = parser.parse_args(list(args)) \
+        if args is not None \
+        else parser.parse_args()
     if args.debug:
         print("Creating database...")
         print(f"Output file: {args.output}")
@@ -185,5 +190,47 @@ def cli():
 
 
 
+def antivirus():
+    import numpy as np
+    import logging
+    import traceback
+    import time
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('[%(asctime)s | %(levelname)s] : %(message)s')
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+
+    wait = lambda x: int(np.floor(60 * (1 + np.log(x) * (4 / np.log(2)))))
+    successful = False
+    counter = 1
+    params = [
+        "--output", "blastdb.fasta",
+        "--n_jobs", "9",
+        "--debug"
+    ]
+    logging.info("Starting the database creation process...")
+    logging.debug(f"The PID of this process is {os.getpid()}")
+    str_params = " ".join(params)
+    while not successful:
+        try:
+            logging.info(f"Attempt {counter} to create the database...")
+            logging.debug(f"Parameters: python createDatabase.py {str_params}")
+            cli(*params)
+            logging.info(f"Database created successfully in attempt {counter}.")
+            successful = True
+        except Exception as e:
+            logging.warning(f"An error occurred: {e}")
+            logging.warning(traceback.format_exc())
+            logging.warning(f"Retrying again in {wait(counter)}s...")
+            time.sleep(wait(counter))
+            successful = False
+            counter += 1
+
+
 if __name__ == '__main__':
-    cli()
+    antivirus()

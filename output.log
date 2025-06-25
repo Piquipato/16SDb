@@ -1,0 +1,135 @@
+[2025-06-25 14:33:51,488 | INFO] : Starting the database creation process...
+[2025-06-25 14:33:51,488 | DEBUG] : The PID of this process is 10220
+[2025-06-25 14:33:51,489 | INFO] : Attempt 1 to create the database...
+[2025-06-25 14:33:51,489 | DEBUG] : Parameters: python createDatabase.py --output blastdb.fasta --n_jobs 9 --debug
+[2025-06-25 14:33:51,508 | WARNING] : An error occurred: DLL load failed while importing _aligncore: El parámetro no es correcto.
+[2025-06-25 14:33:51,523 | WARNING] : Traceback (most recent call last):
+  File "D:\plalanda\16SDb\createDatabase.py", line 222, in antivirus
+    cli(*params)
+  File "D:\plalanda\16SDb\createDatabase.py", line 182, in cli
+    main(
+  File "D:\plalanda\16SDb\createDatabase.py", line 123, in main
+    fasta_sequences = SeqIO.parse(open(fasta_file), 'fasta')
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\SeqIO\__init__.py", line 612, in parse
+    from Bio import AlignIO
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\AlignIO\__init__.py", line 141, in <module>
+    from Bio.Align import MultipleSeqAlignment
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\Align\__init__.py", line 38, in <module>
+    from Bio.Align import _aligncore  # type: ignore
+ImportError: DLL load failed while importing _aligncore: El parámetro no es correcto.
+
+[2025-06-25 14:33:51,523 | WARNING] : Retrying again in 60s...
+[2025-06-25 14:34:51,532 | INFO] : Attempt 2 to create the database...
+[2025-06-25 14:34:51,532 | DEBUG] : Parameters: python createDatabase.py --output blastdb.fasta --n_jobs 9 --debug
+[2025-06-25 14:34:51,547 | WARNING] : An error occurred: DLL load failed while importing _aligncore: El parámetro no es correcto.
+[2025-06-25 14:34:51,547 | WARNING] : Traceback (most recent call last):
+  File "D:\plalanda\16SDb\createDatabase.py", line 222, in antivirus
+    cli(*params)
+  File "D:\plalanda\16SDb\createDatabase.py", line 182, in cli
+    main(
+  File "D:\plalanda\16SDb\createDatabase.py", line 123, in main
+    fasta_sequences = SeqIO.parse(open(fasta_file), 'fasta')
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\SeqIO\__init__.py", line 612, in parse
+    from Bio import AlignIO
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\AlignIO\__init__.py", line 141, in <module>
+    from Bio.Align import MultipleSeqAlignment
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\Align\__init__.py", line 38, in <module>
+    from Bio.Align import _aligncore  # type: ignore
+ImportError: DLL load failed while importing _aligncore: El parámetro no es correcto.
+
+[2025-06-25 14:34:51,547 | WARNING] : Retrying again in 300s...
+[2025-06-25 14:39:51,560 | INFO] : Attempt 3 to create the database...
+[2025-06-25 14:39:51,560 | DEBUG] : Parameters: python createDatabase.py --output blastdb.fasta --n_jobs 9 --debug
+[2025-06-25 14:39:51,591 | WARNING] : An error occurred: DLL load failed while importing _aligncore: El parámetro no es correcto.
+[2025-06-25 14:39:51,591 | WARNING] : Traceback (most recent call last):
+  File "D:\plalanda\16SDb\createDatabase.py", line 222, in antivirus
+    cli(*params)
+  File "D:\plalanda\16SDb\createDatabase.py", line 182, in cli
+    main(
+  File "D:\plalanda\16SDb\createDatabase.py", line 123, in main
+    fasta_sequences = SeqIO.parse(open(fasta_file), 'fasta')
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\SeqIO\__init__.py", line 612, in parse
+    from Bio import AlignIO
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\AlignIO\__init__.py", line 141, in <module>
+    from Bio.Align import MultipleSeqAlignment
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\Align\__init__.py", line 38, in <module>
+    from Bio.Align import _aligncore  # type: ignore
+ImportError: DLL load failed while importing _aligncore: El parámetro no es correcto.
+
+[2025-06-25 14:39:51,591 | WARNING] : Retrying again in 440s...
+[2025-06-25 14:47:11,591 | INFO] : Attempt 4 to create the database...
+[2025-06-25 14:47:11,591 | DEBUG] : Parameters: python createDatabase.py --output blastdb.fasta --n_jobs 9 --debug
+[2025-06-25 14:47:12,030 | WARNING] : An error occurred: DLL load failed while importing _aligncore: El parámetro no es correcto.
+[2025-06-25 14:47:12,034 | WARNING] : Traceback (most recent call last):
+  File "D:\plalanda\16SDb\createDatabase.py", line 222, in antivirus
+    logging.debug(f"Parameters: python createDatabase.py {str_params}")
+  File "D:\plalanda\16SDb\createDatabase.py", line 182, in cli
+    print(f"Number of jobs: {args.n_jobs}")
+  File "D:\plalanda\16SDb\createDatabase.py", line 123, in main
+    print("Loading fasta files...")
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\SeqIO\__init__.py", line 612, in parse
+    from Bio import AlignIO
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\AlignIO\__init__.py", line 141, in <module>
+    from Bio.Align import MultipleSeqAlignment
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\Align\__init__.py", line 38, in <module>
+    from Bio.Align import _aligncore  # type: ignore
+ImportError: DLL load failed while importing _aligncore: El parámetro no es correcto.
+
+[2025-06-25 14:47:12,034 | WARNING] : Retrying again in 540s...
+[2025-06-25 14:56:12,044 | INFO] : Attempt 5 to create the database...
+[2025-06-25 14:56:12,044 | DEBUG] : Parameters: python createDatabase.py --output blastdb.fasta --n_jobs 9 --debug
+[2025-06-25 14:56:12,091 | WARNING] : An error occurred: DLL load failed while importing _aligncore: El parámetro no es correcto.
+[2025-06-25 14:56:12,091 | WARNING] : Traceback (most recent call last):
+  File "D:\plalanda\16SDb\createDatabase.py", line 222, in antivirus
+    logging.debug(f"Parameters: python createDatabase.py {str_params}")
+  File "D:\plalanda\16SDb\createDatabase.py", line 182, in cli
+    print(f"Number of jobs: {args.n_jobs}")
+  File "D:\plalanda\16SDb\createDatabase.py", line 123, in main
+    print("Loading fasta files...")
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\SeqIO\__init__.py", line 612, in parse
+    from Bio import AlignIO
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\AlignIO\__init__.py", line 141, in <module>
+    from Bio.Align import MultipleSeqAlignment
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\Align\__init__.py", line 38, in <module>
+    from Bio.Align import _aligncore  # type: ignore
+ImportError: DLL load failed while importing _aligncore: El parámetro no es correcto.
+
+[2025-06-25 14:56:12,091 | WARNING] : Retrying again in 617s...
+[2025-06-25 15:06:29,102 | INFO] : Attempt 6 to create the database...
+[2025-06-25 15:06:29,102 | DEBUG] : Parameters: python createDatabase.py --output blastdb.fasta --n_jobs 9 --debug
+[2025-06-25 15:06:29,134 | WARNING] : An error occurred: DLL load failed while importing _aligncore: El parámetro no es correcto.
+[2025-06-25 15:06:29,134 | WARNING] : Traceback (most recent call last):
+  File "D:\plalanda\16SDb\createDatabase.py", line 222, in antivirus
+    logging.debug(f"Parameters: python createDatabase.py {str_params}")
+  File "D:\plalanda\16SDb\createDatabase.py", line 182, in cli
+    print(f"Number of jobs: {args.n_jobs}")
+  File "D:\plalanda\16SDb\createDatabase.py", line 123, in main
+    print("Loading fasta files...")
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\SeqIO\__init__.py", line 612, in parse
+    from Bio import AlignIO
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\AlignIO\__init__.py", line 141, in <module>
+    from Bio.Align import MultipleSeqAlignment
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\Align\__init__.py", line 38, in <module>
+    from Bio.Align import _aligncore  # type: ignore
+ImportError: DLL load failed while importing _aligncore: El parámetro no es correcto.
+
+[2025-06-25 15:06:29,134 | WARNING] : Retrying again in 680s...
+[2025-06-25 15:17:49,141 | INFO] : Attempt 7 to create the database...
+[2025-06-25 15:17:49,141 | DEBUG] : Parameters: python createDatabase.py --output blastdb.fasta --n_jobs 9 --debug
+[2025-06-25 15:17:49,163 | WARNING] : An error occurred: DLL load failed while importing _aligncore: El parámetro no es correcto.
+[2025-06-25 15:17:49,163 | WARNING] : Traceback (most recent call last):
+  File "D:\plalanda\16SDb\createDatabase.py", line 222, in antivirus
+    logging.debug(f"Parameters: python createDatabase.py {str_params}")
+  File "D:\plalanda\16SDb\createDatabase.py", line 182, in cli
+    print(f"Number of jobs: {args.n_jobs}")
+  File "D:\plalanda\16SDb\createDatabase.py", line 123, in main
+    print("Loading fasta files...")
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\SeqIO\__init__.py", line 612, in parse
+    from Bio import AlignIO
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\AlignIO\__init__.py", line 141, in <module>
+    from Bio.Align import MultipleSeqAlignment
+  File "C:\Users\geneticalapaz\AppData\Local\anaconda3\envs\biop\lib\site-packages\Bio\Align\__init__.py", line 38, in <module>
+    from Bio.Align import _aligncore  # type: ignore
+ImportError: DLL load failed while importing _aligncore: El parámetro no es correcto.
+
+[2025-06-25 15:17:49,163 | WARNING] : Retrying again in 733s...

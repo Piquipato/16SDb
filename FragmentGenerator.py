@@ -29,17 +29,24 @@ import json
 """
 
 
-def extract_metadata(fragment: SeqRecord) -> tp.Dict[str, str]:
+def extract_metadata(fragment: SeqRecord, mode: str = "normal") -> tp.Dict[str, str]:
     props = {"id": "","name": "","description": ""}
     for key in props.keys():
         props[key] = getattr(fragment, key)
-    props["region"] = re.search(r"Region: ([\w-]+)", props["description"]).group(1)
-    props["ggid"] = re.search(r"ID: (\w+)", props["description"]).group(1)
-    props["ggname"] = re.search(r"Name: (\w+)", props["description"]).group(1)
-    props["ggdesc"] = re.search(
-        r"Description: (.+)",
-        props["description"]
-    ).group(1)
+    if mode == "json":
+        dsc_json = json.loads(props["description"])
+        props["region"] = dsc_json.get("region", "")
+        props["ggid"] = dsc_json.get("id", "")
+        props["ggname"] = dsc_json.get("name", "")
+        props["ggdesc"] = dsc_json.get("description", "")
+    else:
+        props["region"] = re.search(r"Region: ([\w-]+)", props["description"]).group(1)
+        props["ggid"] = re.search(r"ID: (\w+)", props["description"]).group(1)
+        props["ggname"] = re.search(r"Name: (\w+)", props["description"]).group(1)
+        props["ggdesc"] = re.search(
+            r"Description: (.+)",
+            props["description"]
+        ).group(1)
     props["otu"] = re.search(r"otu_(\w+)", props["ggdesc"]).group(0)
     props["tax"] = " ".join([
         m for m in re.findall(
@@ -50,11 +57,11 @@ def extract_metadata(fragment: SeqRecord) -> tp.Dict[str, str]:
     props["ggtag"] = props["ggdesc"].split(" ")[1]
     return props
 
-def extract_metadata_library(library):
+def extract_metadata_library(library, mode = "normal"):
     metadata = []
     len_library = len(library)
     for i, f in enumerate(SeqIO.parse(library, "fasta")):
-        props = extract_metadata(f)
+        props = extract_metadata(f, mode=mode)
         props["idx"] = i
         metadata.append(props)
     return metadata, len_library
@@ -74,7 +81,7 @@ class FragmentGenerator:
         if metadata_path is None:
             if self.debug:
                 print("Extracting metadata from fasta library...")
-            self.metadata, _ = extract_metadata_library(fasta_path)
+            self.metadata, _ = extract_metadata_library(fasta_path, mode="normal")
         else:
             if self.debug:
                 print("Loading metadata from json file...")
@@ -87,8 +94,8 @@ class FragmentGenerator:
             shape=(len(self.otus), len(self.regions)),
             dtype=np.int64
         ), index=self.otus, columns=self.regions)
-        completeness = np.sum(self.present_matrix.to_numpy()) / \
-            np.size(self.present_matrix.to_numpy()) * 100
+        completeness = np.sum(self.present_matrix.to_numpy().flatten()) / \
+            np.size(self.present_matrix.to_numpy().flatten()) * 100
         if self.debug:
             print("Completeness percentage of database: " \
                   f"{completeness:.2f}%")
