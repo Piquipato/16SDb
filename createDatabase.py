@@ -31,7 +31,7 @@ def convert_ambiguous_to_regex(primer):
     return regex
 
 
-def find_fragment(sequence, primer5, primer3, reverse=False):
+def find_fragment(sequence, primer5, primer3, reverse=True):
     if reverse:
         primer3 = primer3.reverse_complement()
     primer5_regex = re.compile(convert_ambiguous_to_regex(primer5))
@@ -45,7 +45,7 @@ def find_fragment(sequence, primer5, primer3, reverse=False):
     return None
 
 
-def fuzzy_degenerate_match(primer, sequence, threshold=0.9):
+def fuzzy_degenerate_match(primer, sequence, threshold=0.8):
     """
     Returns (start, end, similarity) of the best window in sequence matching the degenerate primer.
     """
@@ -65,7 +65,7 @@ def fuzzy_degenerate_match(primer, sequence, threshold=0.9):
     return best
 
 
-def fuzzy_find_fragment(sequence, primer5, primer3, threshold=0.9, reverse=False):
+def fuzzy_find_fragment(sequence, primer5, primer3, threshold=0.8, reverse=True):
     """
     Finds the fragment between two degenerate primers with fuzzy matching.
     """
@@ -81,6 +81,17 @@ def fuzzy_find_fragment(sequence, primer5, primer3, threshold=0.9, reverse=False
     start = match5[1]
     end = match5[1] + match3[0]
     return Seq(seq[start:end])
+
+
+
+def align_find_fragment(sequence, primer5, primer3, threshold=0.8, reverse=True):
+    """
+    Finds the fragment between two primers using alignment.
+    """
+    if reverse:
+        primer3 = primer3.reverse_complement()    
+
+
 
 
 def hash_sequence(sequence, size=10):
@@ -129,7 +140,10 @@ def main(fasta_file, primer_file, outfile="output.fasta", n_jobs=1, debug=False,
             primer_regions[region] = {}
         primer_regions[region][orientation] = primer.seq
     
-    tempdir = os.path.join(os.path.split(os.path.abspath(fasta_file))[0], "work/tmp")
+    tempdir = os.path.abspath(os.path.join(
+        os.path.split(os.path.abspath(fasta_file))[0],
+        "work/tmp"
+    ))
     if os.path.exists(tempdir):
         shutil.rmtree(tempdir)
     os.mkdir(tempdir)
