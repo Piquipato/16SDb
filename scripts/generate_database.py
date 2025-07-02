@@ -65,7 +65,13 @@ def log_step(func):
             params, headers=["Parameter", "Value"], tablefmt="pretty"
         )
         logging.debug(f"Arguments:\n{table}")
-        return runner(*args, **kwargs)
+        try:
+            return runner(*args, **kwargs)
+        except Exception as e:
+            logging.error(f"Error while running step {func.__name__}")
+            logging.error(f"Exception: {e}")
+            logging.error(f"Traceback:\n{traceback.format_exc()}")
+            raise e
     return wrapper
         
 
