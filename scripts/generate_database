@@ -6,7 +6,7 @@ fi
 
 
 BIOP_PATH="$(conda info --envs | awk -v env="$BIOP_ENV" '$1 == env {print $NF}')"
-conda eval "$(conda shell.bash hook)"
+eval "$(conda shell.bash hook)"
 conda activate "$BIOP_PATH"
 
 GEN_DB_SCRIPT="$(realpath "$(dirname "${BASH_SOURCE[0]}")/../frag16S/generate_database.py")"
