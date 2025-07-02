@@ -59,6 +59,7 @@ def reduce_randomly(
     to_store = sorted([
         np.random.choice(idx_list) for idx_list in taxons.values()
     ])
+    logging.debug(f"Selected sequences to store: {to_store}")
     _, temp_fasta_file = tempfile.mkstemp(suffix=".fasta")
     logging.info(f"Storing reduced database to temporary file {temp_fasta_file}")
     with open(temp_fasta_file, "a") as f:
@@ -317,7 +318,7 @@ def build_fragment_database(
     primer_dict = build_primer_dict(primer_file)
     fasta_sequences = SeqIO.parse(fasta_file, "fasta")
     regions = list(primer_dict.keys())
-    outfile = outfile if os.path.splitext(outfile)[0] == ".fasta" \
+    outfile = outfile if os.path.splitext(outfile)[1] == ".fasta" \
         else f"{outfile}.fasta"
     outfile = os.path.abspath(outfile)
     logging.info(f"Writing fragment database to file {outfile}")
@@ -370,6 +371,8 @@ def build_fragment_database(
                     logging.error(f"Traceback:\n{traceback.format_exc()}")
                     continue
     writer.close()
+    logging.info(f"Fragment database written to {outfile}")
+    logging.info("Done building fragment database")
 
 
 zipper = lambda x: dict(zip([func.__name__ for func in x], x))
