@@ -117,8 +117,41 @@ def reducer_worker(i, j, seq_i, seq_j):
         if alignment.shape.position > 0 else 1.0
     return i, j, dist
 
+
 @log_step
-def build_reduced_database(
+def reduce_randomly(
+    fasta_file: str,
+    n_jobs: int = 1,
+):
+    logging.info("Reducing database to random sequences")
+    fasta_seqs = SeqIO.parse(fasta_file, "fasta")
+    cp0, cp1, cp2, fasta_seqs = itertools.tee(fasta_seqs, 4)
+    n_seqs = sum(1 for _ in cp0)
+    logging.info("Extracting sequences metadata")
+    metadata = [extract_metadata(seq) for seq in cp1]
+    taxons = np.array([meta.get("taxon", "undefined") for meta in metadata])
+    utaxons = np.unique(taxons)
+    logging.info("Grouping sequences by taxonomy")
+    taxons = {
+        taxon: np.where(taxons == taxon)[0].tolist()
+        for taxon in utaxons if taxon != "undefined"
+    }
+    logging.info("Selecting one sequence per taxonomy")
+    to_store = sorted([
+        np.random.choice(idx_list) for idx_list in taxons.values()
+    ])
+    _, temp_fasta_file = tempfile.mkstemp(suffix=".fasta")
+    logging.info(f"Storing reduced database to temporary file {temp_fasta_file}")
+    with open(temp_fasta_file, "a") as f:
+        for i, seq in enumerate(cp2):
+            if not i in to_store:
+                continue
+            SeqIO.write(seq, f, "fasta")
+    return temp_fasta_file
+
+
+@log_step
+def reduce_by_centroid(
     fasta_file: str,
     n_jobs: int = 1,
 ):
@@ -471,11 +504,18 @@ def setup_logging(
         fileh.setFormatter(formatter)
         logger.addHandler(fileh)
 
+zipper = lambda x: dict(zip([func.__name__ for func in x], x))
+REDUCERS = zipper([
+    reduce_randomly,
+    reduce_by_centroid,
+])
+
 
 def main(
     fasta_file: str,
     primer_file: str,
     outfile: str,
+    reducer: str = "reduce_randomly",
     matcher: tp.Callable = align_matcher,
     threshold: float = 0.8,
     reverse_primer3: bool = True,
@@ -483,7 +523,7 @@ def main(
     log_level: int = 20
 ):
     setup_logging(log_level=log_level)
-    reduced_fasta = build_reduced_database(
+    reduced_fasta = REDUCERS[reducer](
         fasta_file=fasta_file,
         n_jobs=n_jobs,
     )
@@ -498,7 +538,7 @@ def main(
     )
 
 
-zipper = lambda x: dict(zip([func.__name__ for func in x], x))
+
 MATCHERS = zipper([
     align_matcher,
     exact_matcher,
@@ -540,6 +580,15 @@ def cli(*args):
         default=default_output,
         help="File in .fasta format in which to store fragments " \
             f"(default: {default_output})."
+    )
+    parser.add_argument(
+        "--reducer", "-r",
+        dest="reducer",
+        type=str,
+        default="reduce_randomly",
+        choices=list(REDUCERS.keys()),
+        help="Reducer to use to reduce the database before extracting " \
+            "the fragments (default: reduce_randomly)."
     )
     parser.add_argument(
         "--matcher", "-m",
