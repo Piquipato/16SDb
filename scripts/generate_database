@@ -1,4 +1,13 @@
 #!/bin/bash
 
+if [[ -z $BIOP_ENV ]]; then
+    BIOP_ENV="fasta"
+fi
+
+
+BIOP_PATH="$(conda info --envs | awk -v env="$BIOP_ENV" '$1 == env {print $NF}')"
+# conda eval "$(conda shell.bash hook)"
+# conda activate "$BIOP_PATH"
+echo $BIOP_PATH
+
 GEN_DB_SCRIPT="$(realpath "$(dirname "${BASH_SOURCE[0]}")/../frag16S/generate_database.py")"
-echo $GEN_DB_SCRIPT
