@@ -37,6 +37,14 @@ def reducer_worker(i, j, seq_i, seq_j):
     return i, j, dist
 
 
+def no_reduce(
+    fasta_file: str,
+    n_jobs: int = 1,
+):
+    logging.info("No reduction applied, returning original fasta file")
+    return fasta_file
+
+
 @log_step
 def reduce_randomly(
     fasta_file: str,
@@ -47,10 +55,12 @@ def reduce_randomly(
     cp0, cp1, cp2, fasta_seqs = itertools.tee(fasta_seqs, 4)
     n_seqs = sum(1 for _ in cp0)
     logging.info("Extracting sequences metadata")
+    logging.debug(f"Total sequences: {n_seqs}")
     metadata = [extract_metadata(seq) for seq in cp1]
     taxons = np.array([meta.get("taxon", "undefined") for meta in metadata])
     utaxons = np.unique(taxons)
     logging.info("Grouping sequences by taxonomy")
+    logging.debug(f"Unique taxonomies: {len(utaxons)}")
     taxons = {
         taxon: np.where(taxons == taxon)[0].tolist()
         for taxon in utaxons if taxon != "undefined"
@@ -59,7 +69,7 @@ def reduce_randomly(
     to_store = sorted([
         np.random.choice(idx_list) for idx_list in taxons.values()
     ])
-    logging.debug(f"Selected sequences to store: {to_store}")
+    logging.debug(f"Selected sequences to store: {len(to_store)}")
     _, temp_fasta_file = tempfile.mkstemp(suffix=".fasta")
     logging.info(f"Storing reduced database to temporary file {temp_fasta_file}")
     with open(temp_fasta_file, "a") as f:
@@ -80,10 +90,12 @@ def reduce_by_centroid(
     cp0, cp1, cp2, cp3, cp4, fasta_seqs = itertools.tee(fasta_seqs, 6)
     n_seqs = sum(1 for _ in cp0)
     logging.info("Extracting sequences metadata")
+    logging.debug(f"Total sequences: {n_seqs}")
     metadata = [extract_metadata(seq) for seq in cp1]
     taxons = np.array([meta.get("taxon", "undefined") for meta in metadata])
     utaxons = np.unique(taxons)
     logging.info("Grouping sequences by taxonomy")
+    logging.debug(f"Unique taxonomies: {len(utaxons)}")
     taxons = {
         taxon: np.where(taxons == taxon)[0].tolist()
         for taxon in utaxons if taxon != "undefined"
@@ -128,6 +140,7 @@ def reduce_by_centroid(
         for taxon, dists in taxon_avg_dists.items()
     }
     to_store = sorted(list(taxon_min_samples.values()))
+    logging.debug(f"Selected sequences to store: {len(to_store)}")
     _, temp_fasta_file = tempfile.mkstemp(suffix=".fasta")
     logging.info(f"Storing reduced database to temporary file {temp_fasta_file}")
     with open(temp_fasta_file, "a") as f:
@@ -140,7 +153,7 @@ def reduce_by_centroid(
 
 def exact_matcher(
     sequence: SeqRecord,
-    primer: tp.Union[Seq, SeqRecord],
+    primer: Seq,
     threshold: float = 0.8,
     reverse: bool = False
 ) -> tp.Tuple[int, float]:
@@ -157,7 +170,7 @@ def exact_matcher(
 
 def fuzzy_matcher(
     sequence: SeqRecord,
-    primer: tp.Union[Seq, SeqRecord],
+    primer: Seq,
     threshold: float = 0.8,
     reverse: bool = False
 ) -> tp.Tuple[int, float]:
@@ -190,7 +203,7 @@ def fuzzy_matcher(
 
 def align_matcher(
     sequence: SeqRecord,
-    primer: tp.Union[Seq, SeqRecord],
+    primer: Seq,
     threshold: float = 0.8,
     reverse: bool = False
 ) -> tp.Tuple[int, float]:
@@ -199,7 +212,7 @@ def align_matcher(
     best_score = None
     best_aln = None
     for one_primer in sorted([
-        str(s) for s in DNA(str(primer.seq)).expand_degenerates()
+        str(s) for s in DNA(str(primer)).expand_degenerates()
     ]):
         this_aln = local_pairwise_align_ssw(
             DNA(one_primer),
@@ -218,7 +231,7 @@ def align_matcher(
         seq_pos[1] + len(primer) - prim_pos[1]
     )
 
-    primer = str(primer.seq)
+    primer = str(primer)
     bits_prim = [primer[:prim_pos[0]], aln_prim, primer[prim_pos[1]+1:]]
     full_prim = ''.join(map(str, bits_prim))
     sequence = str(sequence.seq)
@@ -248,8 +261,8 @@ def align_matcher(
 
 def find_fragment(
     sequence: SeqRecord,
-    primer5: tp.Union[Seq, SeqRecord],
-    primer3: tp.Union[Seq, SeqRecord],
+    primer5: Seq,
+    primer3: Seq,
     matcher: tp.Callable = align_matcher,
     threshold: float = 0.8,
     reverse_primer3: bool = True
@@ -279,6 +292,7 @@ def find_fragment(
 def fragment_worker(
     fasta_record: SeqRecord,
     primer_dict: tp.Dict[str, Seq],
+    region: str,
     matcher: tp.Callable = align_matcher,
     threshold: float = 0.8,
     reverse_primer3: bool = True,
@@ -286,6 +300,11 @@ def fragment_worker(
     primer5 = primer_dict.get("F")
     primer3 = primer_dict.get("R")
     metadata = extract_metadata(fasta_record)
+    metadata["region"] = region
+    metadata = dict(sorted(
+        metadata.items(),
+        key=lambda it: len(it[1])
+    ))
     fragment = find_fragment(
         sequence=fasta_record,
         primer5=primer5,
@@ -341,6 +360,7 @@ def build_fragment_database(
             kws_list.append(dict(
                 fasta_record=fasta_sequence,
                 primer_dict=primer_dict[region],
+                region=region,
                 matcher=matcher,
                 threshold=threshold,
                 reverse_primer3=reverse_primer3
@@ -373,12 +393,46 @@ def build_fragment_database(
     writer.close()
     logging.info(f"Fragment database written to {outfile}")
     logging.info("Done building fragment database")
+    return outfile
+
+
+@log_step
+def store_metadata(
+    outfile: str,
+):
+    logging.info("Storing metadata for each sequence in the database")
+    dirname = os.path.dirname(
+        os.path.abspath(outfile)
+    )
+    outname = os.path.splitext(
+        os.path.basename(outfile)
+    )[0]
+    outcsv = os.path.join(
+        dirname,
+        f"meta_{outname}.csv"
+    )
+    sequences = SeqIO.parse(outfile, "fasta")
+    metadata = []
+    for seq in sequences:
+        meta = json.loads(seq.description[21:])
+        meta["length"] = len(str(seq.seq))
+        metadata.append(meta)
+    metadata = pd.DataFrame(metadata)
+    metadata.to_csv(
+        outcsv,
+        sep=",",
+        index=False,
+        header=True
+    )
+    logging.info(f"Metadata stored in {outcsv}")
+    return outcsv
 
 
 zipper = lambda x: dict(zip([func.__name__ for func in x], x))
 REDUCERS = zipper([
     reduce_randomly,
     reduce_by_centroid,
+    no_reduce,
 ])
 MATCHERS = zipper([
     align_matcher,
@@ -402,7 +456,7 @@ def main(
         fasta_file=fasta_file,
         n_jobs=n_jobs,
     )
-    build_fragment_database(
+    fragments = build_fragment_database(
         fasta_file=reduced_fasta,
         primer_file=primer_file,
         outfile=outfile,
@@ -411,6 +465,7 @@ def main(
         reverse_primer3=reverse_primer3,
         n_jobs=n_jobs,
     )
+    metadata = store_metadata(fragments)
 
 
 LOG_LEVELS = dict(sorted([
@@ -504,6 +559,7 @@ def cli(*args):
         fasta_file=os.path.abspath(cliargs.fasta_file),
         primer_file=os.path.abspath(cliargs.primer_file),
         outfile=os.path.abspath(cliargs.outfile),
+        reducer=cliargs.reducer,
         matcher=cliargs.matcher,
         threshold=cliargs.threshold,
         reverse_primer3=cliargs.reverse_primer3,

@@ -1,0 +1,2 @@
+nohup: ignoring input
+python: can't open file '/data/16SDb/frag16S/generate_database.py': [Errno 2] No such file or directory

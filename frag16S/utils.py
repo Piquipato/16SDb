@@ -28,7 +28,7 @@ def extract_metadata(sequence: SeqRecord) -> tp.Dict[str, str]:
         hash=metadata["seqhash"],
     )
     search = re.search(
-        r"(\d+) ([\w.]+) ([\w. ]+) (\w+;.+;) ([\w]+)",
+        r"(\d+) ([\w.]+) ([\w. ]+) (Archaea;.+;|Bacteria;.+;) ([\w]+)",
         metadata.get("description", "")
     )
     for i, key in enumerate([
@@ -63,7 +63,7 @@ def build_primer_dict(
         if not region in primer_dict.keys():
             primer_dict[region] = {}
         if orientation not in primer_dict[region].keys():
-            primer_dict[region][orientation] = Seq(str(primer.seq))
+            primer_dict[region][orientation] = primer.seq
     return {
         region: primers for region, primers in primer_dict.items()
         if "F" in primers.keys() and "R" in primers.keys()

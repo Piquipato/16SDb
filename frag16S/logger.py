@@ -38,8 +38,11 @@ def track_open(func):
     def wrapper(*args, **kwargs):
         original_open = builtins.open
         def open_logger(file, *a, **k):
-            opened = os.path.abspath(file)
-            logging.debug(f"Opened file {opened}")
+            if isinstance(file, int):
+                logging.debug(f"Opened file descriptor {file}")
+            else:
+                opened = os.path.abspath(file)
+                logging.debug(f"Opened file {opened}")
             return original_open(file, *a, **k)
         builtins.open = open_logger
         try:

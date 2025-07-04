@@ -1,0 +1,73 @@
+nohup: ignoring input
+[2025-07-03 09:56:04,215 | DEBUG] : Running step reduce_randomly
+[2025-07-03 09:56:04,216 | DEBUG] : Prototype: reduce_randomly(fasta_file: str, n_jobs: int = 1)
+[2025-07-03 09:56:04,217 | DEBUG] : Arguments:
++------------+------------------------------------------------------+
+| Parameter  |                        Value                         |
++------------+------------------------------------------------------+
+| fasta_file | /data/16SDb/current_GREENGENES_gg16S_unaligned.fasta |
+|   n_jobs   |                          10                          |
++------------+------------------------------------------------------+
+[2025-07-03 09:56:04,217 | INFO] : Reducing database to random sequences
+[2025-07-03 09:56:04,330 | DEBUG] : Opened file /data/16SDb/current_GREENGENES_gg16S_unaligned.fasta
+[2025-07-03 09:56:14,616 | INFO] : Extracting sequences metadata
+[2025-07-03 09:56:14,616 | DEBUG] : Total sequences: 406997
+[2025-07-03 09:56:27,936 | INFO] : Grouping sequences by taxonomy
+[2025-07-03 09:56:27,936 | DEBUG] : Unique taxonomies: 4180
+[2025-07-03 09:58:26,524 | INFO] : Selecting one sequence per taxonomy
+[2025-07-03 09:58:26,656 | DEBUG] : Selected sequences to store: 4179
+[2025-07-03 09:58:26,657 | INFO] : Storing reduced database to temporary file /tmp/tmprqhqy8l3.fasta
+[2025-07-03 09:58:26,657 | DEBUG] : Opened file /tmp/tmprqhqy8l3.fasta
+[2025-07-03 09:59:46,923 | DEBUG] : Running step build_fragment_database
+[2025-07-03 09:59:46,923 | DEBUG] : Prototype: build_fragment_database(fasta_file: str, primer_file: str, outfile: str, matcher: Callable = <function align_matcher at 0x78449f731d30>, threshold: float = 0.8, reverse_primer3: bool = True, n_jobs: int = 1)
+[2025-07-03 09:59:46,924 | DEBUG] : Arguments:
++-----------------+--------------------------------------------+
+|    Parameter    |                   Value                    |
++-----------------+--------------------------------------------+
+|   fasta_file    |           /tmp/tmprqhqy8l3.fasta           |
+|   primer_file   |         /data/16SDb/primers.fasta          |
+|     outfile     | /data/16SDb/blastdb_GREENGENES_gg16S.fasta |
+|     matcher     | <function align_matcher at 0x78449f731d30> |
+|    threshold    |                    0.8                     |
+| reverse_primer3 |                    True                    |
+|     n_jobs      |                     10                     |
++-----------------+--------------------------------------------+
+[2025-07-03 09:59:46,924 | INFO] : Starting to build fragment database
+[2025-07-03 09:59:46,924 | INFO] : Building region dictionary with primers...
+[2025-07-03 09:59:46,924 | DEBUG] : Opened file /data/16SDb/primers.fasta
+[2025-07-03 09:59:46,925 | DEBUG] : Opened file /tmp/tmprqhqy8l3.fasta
+[2025-07-03 09:59:46,925 | INFO] : Writing fragment database to file /data/16SDb/blastdb_GREENGENES_gg16S.fasta
+[2025-07-03 09:59:46,925 | DEBUG] : Opened file /data/16SDb/blastdb_GREENGENES_gg16S.fasta
+[2025-07-03 09:59:46,946 | INFO] : Calculating fragments with 10 cores
+[2025-07-03 09:59:47,068 | DEBUG] : Opened file descriptor 12
+[2025-07-03 09:59:47,079 | DEBUG] : Opened file descriptor 13
+[2025-07-03 09:59:47,091 | DEBUG] : Opened file descriptor 14
+[2025-07-03 09:59:47,102 | DEBUG] : Opened file descriptor 16
+[2025-07-03 09:59:47,114 | DEBUG] : Opened file descriptor 18
+[2025-07-03 09:59:47,125 | DEBUG] : Opened file descriptor 20
+[2025-07-03 09:59:47,136 | DEBUG] : Opened file descriptor 24
+[2025-07-03 09:59:47,148 | DEBUG] : Opened file descriptor 27
+[2025-07-03 09:59:47,159 | DEBUG] : Opened file descriptor 29
+[2025-07-03 09:59:47,171 | DEBUG] : Opened file descriptor 31
+/opt/conda/envs/fasta/lib/python3.9/site-packages/skbio/util/_warning.py:40: DeprecationWarning: `local_pairwise_align_ssw` has been deprecated since 0.5.8. It will be removed in favor of more general purpose and performant aligners. Additional details at https://github.com/scikit-bio/scikit-bio/issues/1814.
+  warn(message, warning)
+/opt/conda/envs/fasta/lib/python3.9/site-packages/skbio/util/_warning.py:40: DeprecationWarning: `local_pairwise_align_ssw` has been deprecated since 0.5.8. It will be removed in favor of more general purpose and performant aligners. Additional details at https://github.com/scikit-bio/scikit-bio/issues/1814.
+  warn(message, warning)
+/opt/conda/envs/fasta/lib/python3.9/site-packages/skbio/util/_warning.py:40: DeprecationWarning: `local_pairwise_align_ssw` has been deprecated since 0.5.8. It will be removed in favor of more general purpose and performant aligners. Additional details at https://github.com/scikit-bio/scikit-bio/issues/1814.
+  warn(message, warning)
+/opt/conda/envs/fasta/lib/python3.9/site-packages/skbio/util/_warning.py:40: DeprecationWarning: `local_pairwise_align_ssw` has been deprecated since 0.5.8. It will be removed in favor of more general purpose and performant aligners. Additional details at https://github.com/scikit-bio/scikit-bio/issues/1814.
+  warn(message, warning)
+/opt/conda/envs/fasta/lib/python3.9/site-packages/skbio/util/_warning.py:40: DeprecationWarning: `local_pairwise_align_ssw` has been deprecated since 0.5.8. It will be removed in favor of more general purpose and performant aligners. Additional details at https://github.com/scikit-bio/scikit-bio/issues/1814.
+  warn(message, warning)
+/opt/conda/envs/fasta/lib/python3.9/site-packages/skbio/util/_warning.py:40: DeprecationWarning: `local_pairwise_align_ssw` has been deprecated since 0.5.8. It will be removed in favor of more general purpose and performant aligners. Additional details at https://github.com/scikit-bio/scikit-bio/issues/1814.
+  warn(message, warning)
+/opt/conda/envs/fasta/lib/python3.9/site-packages/skbio/util/_warning.py:40: DeprecationWarning: `local_pairwise_align_ssw` has been deprecated since 0.5.8. It will be removed in favor of more general purpose and performant aligners. Additional details at https://github.com/scikit-bio/scikit-bio/issues/1814.
+  warn(message, warning)
+/opt/conda/envs/fasta/lib/python3.9/site-packages/skbio/util/_warning.py:40: DeprecationWarning: `local_pairwise_align_ssw` has been deprecated since 0.5.8. It will be removed in favor of more general purpose and performant aligners. Additional details at https://github.com/scikit-bio/scikit-bio/issues/1814.
+  warn(message, warning)
+/opt/conda/envs/fasta/lib/python3.9/site-packages/skbio/util/_warning.py:40: DeprecationWarning: `local_pairwise_align_ssw` has been deprecated since 0.5.8. It will be removed in favor of more general purpose and performant aligners. Additional details at https://github.com/scikit-bio/scikit-bio/issues/1814.
+  warn(message, warning)
+/opt/conda/envs/fasta/lib/python3.9/site-packages/skbio/util/_warning.py:40: DeprecationWarning: `local_pairwise_align_ssw` has been deprecated since 0.5.8. It will be removed in favor of more general purpose and performant aligners. Additional details at https://github.com/scikit-bio/scikit-bio/issues/1814.
+  warn(message, warning)
+[2025-07-03 10:00:20,796 | INFO] : Fragment database written to /data/16SDb/blastdb_GREENGENES_gg16S.fasta
+[2025-07-03 10:00:20,796 | INFO] : Done building fragment database
